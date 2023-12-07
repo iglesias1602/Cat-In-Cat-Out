@@ -4,6 +4,7 @@ from CICO.forms import ConnectionForm, NewAccountForm, ForgottenPassword, NewPas
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from .models import UserCICO, Cats, DeviceRecords, CatsAdventures, Trigger
 from django.views.generic import ListView
+from django.conf import settings
 import logging
 logger = logging.getLogger('django')
 from django.http import HttpResponse
@@ -269,7 +270,7 @@ def profileIndex(request):
         
         recordList = UpdateList(request, UserCICO.objects.get(username=request.user).ownedDevice, request.session["filterDate"] )
         context = {
-            "user": user.username,
+            "user": request.user.username,
             "recordList": recordList, 
             "xValues": xValues,
             "cat_data": cat_data,
@@ -428,7 +429,7 @@ def get_cats(request):
     if request.user.is_authenticated:
         user_cats = Cats.objects.filter(ownerId_id=request.user).values_list('name', 'catId')
         catsAndStatus = []
-        for i in range(len(user_cats)-1):
+        for i in range(len(user_cats)):
             catsAndStatus.append([user_cats[i][0], user_cats[i][1], Cats.objects.filter(ownerId_id=request.user)[i].getStatus()["status"]])
         return JsonResponse(catsAndStatus, safe=False)
     return JsonResponse({'error': 'User not authenticated'}, status=401)
@@ -447,10 +448,20 @@ def get_cat_details(request, catId):
 @login_required
 def delete_cat(request, catId):
     cat = get_object_or_404(Cats, catId=catId, ownerId_id=request.user)
+
+    # Delete the image using Django's file storage API
     if cat.image:
-        if os.path.isfile(cat.image.path):
-            os.remove(cat.image.path)
+        cat.image.delete()
+
+    # If you want to delete the entire directory associated with the cat
+    cat_directory = os.path.join(settings.MEDIA_ROOT, f'user_{request.user.id}', f'cat_{catId}')
+    print(request.user.id, catId, cat_directory)
+    if default_storage.exists(cat_directory):
+        default_storage.delete(cat_directory)
+
+    # Delete the cat record
     cat.delete()
+
     return JsonResponse({'message': 'Cat deleted successfully'})
 
 @login_required
