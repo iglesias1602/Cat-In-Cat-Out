@@ -54,6 +54,7 @@ def postRaspberry(request):
     else:
         return JsonResponse({"error": "Aucune photo reçue"}, status=400)
 
+
 LIST_SIZE = 2
 
 def UpdateList(request, deviceId, date="00-00-000"):
@@ -84,13 +85,41 @@ def AddRecord(deviceOwner,event,isCat, photo, cat = None):
 def Empty(request):
     return redirect("CICO/")
 
+logger = logging.getLogger(__name__)
+
+def getClientID(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]  # Take the first IP in the list
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 def checkIP(request):
-    print(request.session['IP'], request.META.get("REMOTE_ADDR"))
-    if request.session['IP'] != request.META.get("REMOTE_ADDR"):
-        return False
-    else:
+    session_ip = request.session.get('IP', None)
+    current_ip = getClientID(request)
+
+    # Logging for debugging, consider lowering log level or removing in production
+    logger.debug(f"Session IP: {session_ip}, Current IP: {current_ip}")
+
+    # Logging for debugging, consider lowering log level or removing in production
+    logger.debug(f"Session IP: {session_ip}, Current IP: {current_ip}")
+
+    # If there's no IP in the session, this might be the first login
+    if session_ip is None:
+        # Store the current IP in the session for future checks
+        request.session['IP'] = current_ip
+        session_ip = current_ip  # Update the session_ip variable
+        logger.debug(f"First login, session IP set to: {session_ip}")
         return True
+
+    # Compare the IPs for subsequent requests
+    if session_ip != current_ip:
+        # IP has changed since the last session
+        logger.debug(f"IP change detected. Session IP: {session_ip}, Current IP: {current_ip}")
+        return False
+
+    return True
 
 
 def vue(request):
@@ -370,8 +399,7 @@ def newpassword(request):
     else:
         new_password_form = NewPassword()
 
-    return render(request, "CICO/newpassword.html", context={"form": new_password_form})
-
+        return render(request, "CICO/newpassword.html", context={"form": new_password_form})
 
 @login_required
 def add_cat(request):

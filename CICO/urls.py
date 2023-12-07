@@ -13,7 +13,6 @@ urlpatterns = [
     path("faq",views.faq, name = "faq"),
     path("contact",views.contact, name = "contact"),
     path("profileIndex", views.profileIndex, name ="profileIndex"),
-    path("profile", views.profile, name ="profile"),
     path("commande", views.commande, name ="commande"),
     path("postRaspberry", views.postRaspberry, name="postRaspberry"),
 
@@ -23,14 +22,11 @@ urlpatterns = [
     path('delete_cat/<str:catId>/', views.delete_cat, name='delete_cat'),
     path('modify_cat/<str:catId>/', views.modify_cat, name='modify_cat'),
     path("forgotpassword", views.forgotpassword, name ="forgotpassword"),
-    path("newpassword", views.newpassword, name="newpassword"),
+    path("newpassword/<uidb64>/<token>/", views.newpassword, name="newpassword"),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path('mail_sent',views.mail_sent,name="mail_sent"),
     path('reset_done', views.reset_done, name="reset_done"),
-
-
     path("postRaspberry", views.postRaspberry, name="postRaspberry"),
-
     path("profileNoDevice", views.profileNoDevice, name ="profileNoDevice" )
 
 

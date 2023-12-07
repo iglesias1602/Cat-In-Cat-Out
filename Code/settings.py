@@ -9,10 +9,16 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-#LMAP/ZMAP
+
 import os
 from pathlib import Path
 from decouple import config
+import sys
+import dj_database_url
+from django.core.management.utils import get_random_secret_key
+#from dotenv import load_dotenv
+#load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,19 +28,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ju6970p^hmj#b=2#@99#34x$6^m#y8qmostud(^cht7w0&)r82'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+
+
+SESSION_COOKIE_DOMAIN = '.cico.ovh'
+SESSION_COOKIE_AGE = 1209600  # 2 weeks, in seconds
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+CSRF_COOKIE_SECURE = True
 
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,cico.ovh,seashell-app-py5s3.ondigitalocean.app").split(",")
 
-ALLOWED_HOSTS = ["192.168.78.89", "0.0.0.0","192.168.43.11", "172.20.10.6"]
- 
 
 # Application definition
 
@@ -48,6 +59,7 @@ INSTALLED_APPS = [
     'CICO.apps.CicoConfig',
     'bootstrap5',
     'fontawesomefree',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -86,12 +98,19 @@ AUTH_USER_MODEL = "CICO.UserCICO"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEVELOPMENT_MODE is True:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
     }
-}
+elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+    if os.getenv("DATABASE_URL", None) is None:
+        raise Exception("DATABASE_URL environment variable not defined")
+    DATABASES = {
+        "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+    }
 
 
 # Password validation
@@ -128,9 +147,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static' #os.path.join(BASE_DIR, 'static')
+]
 
+STATIC_ROOT = BASE_DIR / "staticfiles-cdn" #os.path.join(BASE_DIR, 'staticfiles-cdn')
+
+
+#MEDIA_ROOT = BASE_DIR / "staticfiles-cdn" / "media" #os.path.join(BASE_DIR, 'staticfiles-cdn', 'media')
 MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "mediafiles")
+
+from .cdn.conf import *
 
 
 # Default primary key field type
@@ -143,5 +172,5 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")

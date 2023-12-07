@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import F
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
@@ -22,7 +21,7 @@ class Statuses(models.Model):
     
 
 class UserSettings(models.Model):
-    userId = models.OneToOneField(UserCICO, primary_key=True, on_delete=models.CASCADE)
+    userId = models.OneToOneField(UserCICO, primary_key=True, on_delete=models.PROTECT)
     setting1 = models.CharField(max_length=100)
     #add other settings as required
 
@@ -31,7 +30,7 @@ def record_directory_path(instance, filename):
     return 'media/device_{0}/record_{1}/{2}'.format(instance.deviceId_id, instance.recordId, filename)
 
 class DeviceRecords(models.Model):
-    deviceId = models.ForeignKey(UserCICO, to_field="ownedDevice", on_delete=models.CASCADE,name="deviceId")
+    deviceId = models.ForeignKey(UserCICO, to_field="ownedDevice", on_delete=models.PROTECT,name="deviceId")
     recordId = models.AutoField(primary_key=True)
     image = models.ImageField(upload_to=record_directory_path, null=True, blank=True)
     time = models.DateTimeField(auto_now_add=True)
@@ -63,7 +62,6 @@ class Cats(models.Model):
 
     def getStatus(self):
         return Cats.objects.filter(catId=self.catId).annotate(status=F("trigger__recordId_id__event")).values("status").last()
-
 
 
 class Trigger(models.Model):
