@@ -449,15 +449,18 @@ def get_cat_details(request, catId):
 def delete_cat(request, catId):
     cat = get_object_or_404(Cats, catId=catId, ownerId_id=request.user)
 
-    # Delete the image using Django's file storage API
+    # Delete the image
     if cat.image:
         cat.image.delete()
 
-    # If you want to delete the entire directory associated with the cat
-    cat_directory = os.path.join(settings.MEDIA_ROOT, f'user_{request.user.id}', f'cat_{catId}')
-    print(request.user.id, catId, cat_directory)
+    # Delete all files in the cat directory
+    cat_directory = f'user_{request.user.id}/cat_{catId}'
     if default_storage.exists(cat_directory):
-        default_storage.delete(cat_directory)
+        # List all files in the directory
+        files = default_storage.listdir(cat_directory)[1]
+        for file in files:
+            file_path = os.path.join(cat_directory, file)
+            default_storage.delete(file_path)
 
     # Delete the cat record
     cat.delete()
