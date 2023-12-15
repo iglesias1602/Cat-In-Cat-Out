@@ -54,8 +54,12 @@ class Cats(models.Model):
     image = models.ImageField(upload_to=cat_directory_path, null=True, blank=True)
 
     def clean(self):
-        if Cats.objects.filter(name=self.name).exists():
-            raise ValidationError("A cat with this name already exists for this user.")
+            if self.pk:  # Check if the instance already exists
+                if Cats.objects.filter(name=self.name).exclude(pk=self.pk).exists():
+                    raise ValidationError("A cat with this name already exists for this user.")
+            else:
+                if Cats.objects.filter(name=self.name).exists():
+                    raise ValidationError("A cat with this name already exists for this user.")
                                   
     def save(self, *args, **kwargs):
         self.clean()
