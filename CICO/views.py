@@ -444,26 +444,31 @@ def get_cat_details(request, catId):
         'image_url': cat.image.url if cat.image else ''
     })
 
+logger = logging.getLogger(__name__)
 
 @login_required
 def delete_cat(request, catId):
-    cat = get_object_or_404(Cats, catId=catId, ownerId_id=request.user)
+    try:
+        cat = get_object_or_404(Cats, catId=catId, ownerId_id=request.user)
 
-    # Delete the image
-    if cat.image:
-        cat.image.delete()
+        # Delete the image
+        if cat.image:
+            cat.image.delete()
 
-    # Delete all files in the cat directory
-    cat_directory = f'user_{request.user.id}/cat_{catId}'
-    if default_storage.exists(cat_directory):
-        # List all files in the directory
-        files = default_storage.listdir(cat_directory)[1]
-        for file in files:
-            file_path = os.path.join(cat_directory, file)
-            default_storage.delete(file_path)
+            # Delete all files in the cat directory
+            cat_directory = f'user_{request.user.id}/cat_{catId}'
+            if default_storage.exists(cat_directory):
+                files = default_storage.listdir(cat_directory)[1]
+                for file in files:
+                    file_path = os.path.join(cat_directory, file)
+                    default_storage.delete(file_path)
 
-    # Delete the cat record
-    cat.delete()
+        # Delete the cat record
+        cat.delete()
+
+    except Exception as e:
+        logger.error(f"Error deleting cat: {e}")
+        return JsonResponse({'error': 'Error occurred while deleting the cat'}, status=500)
 
     return JsonResponse({'message': 'Cat deleted successfully'})
 
