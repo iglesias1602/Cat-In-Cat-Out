@@ -42,7 +42,7 @@ from .serializers import CatSerializer
 #        return HttpResponse("test")
 @csrf_exempt
 def postRaspberry(request):
-    owner = UserCICO.objects.get(id=2)
+    owner = UserCICO.objects.get(id=3)
     if request.method == 'POST':
         print(request.FILES)
 
