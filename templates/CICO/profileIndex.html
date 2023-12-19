@@ -331,7 +331,7 @@
                             <div class="row row-cols-3">
                                 <div class="col-auto col-sm-auto col-md-auto col-lg-auto col-xl-auto col-xxl-auto align-self-center m-auto"
                                     style="margin: 15px;">
-                                    <img id="imgFrontPreview" class="border rounded d-flex m-auto" width="100%"
+                                    <img id="selectedCatDisplay" class="border rounded d-flex m-auto" width="100%"
                                         height="200" src="{% static 'img/silhouette-face.jpg' %}">
                                     <p id="selectedCatDisplay"></p>
                                 </div>
@@ -485,7 +485,9 @@
 
         let selectedCat = ""
         function showSelectedCat() {
-            document.getElementById("selectedCatDisplay").innerHTML = selectedCat
+            console.log(selectedCat)
+            $('#selectedCatDisplay').attr('src', './media/' + selectedCat);
+            //document.getElementById("selectedCatDisplay").innerHTML = selectedCat
         }
 
     </script>
