@@ -70,21 +70,15 @@
 
 
                 {% for record in recordList %}
-
-                <tr id=row_{{forloop.counter}}>
+                <tr>
+                    <td>{{ record.catName }}</td>
+                    <td>{{ record.event }}</td>
+                    <!-- Other fields -->
                     <td>
-                        <button class="btn d-flex my-auto justify-content-xl-start" type="button"
-                            data-bs-target="#modal-record" data-bs-toggle="modal" style="width: 100%"
-                            onclick="showSelectedCat('{{ record.get_image_url }}')">
-                            {{record.catName}}
-                        </button>
+                        <!-- Use the imageUrl for displaying or linking to the image -->
+                        <img src="{{ record.imageUrl }}" alt="Record Image">
                     </td>
-                    <td>{{record.event}}</td>
-                    <td>{{record.time}}</td>
                 </tr>
-
-
-
                 {% endfor %}
 
             </tbody>

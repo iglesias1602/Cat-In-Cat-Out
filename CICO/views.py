@@ -74,7 +74,20 @@ def GetRecords(deviceId,date):
         querySet = DeviceRecords.objects.filter(deviceId=deviceId,
             time__year=dateObject.year, time__month=dateObject.month,
                                             time__day=dateObject.day).annotate(catName=F('trigger__catId__name'))
-    return querySet.values()
+    records = []
+    for record in querySet:
+        record_dict = {
+            'recordId': record.recordId,
+            'deviceId': record.deviceId,
+            'catName': record.catName,
+            'event': record.event,
+            'isCat': record.isCat,
+            'time': record.time,
+            'imageUrl': record.image.url if record.image else None  # Include image URL
+        }
+        records.append(record_dict)
+
+    return records
 
 
 

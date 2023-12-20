@@ -43,10 +43,6 @@ class DeviceRecords(models.Model):
     event = models.CharField(max_length=3, choices=EVENTS_CHOICES)
     isCat = models.BooleanField()
 
-    def get_image_url(self):
-        """Return the full URL of the image, or None if there is no image."""
-        return self.image.url if self.image else None
-
 def cat_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'media/user_{0}/cat_{1}/{2}'.format(instance.ownerId_id, instance.catId, filename)
