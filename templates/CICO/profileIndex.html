@@ -485,7 +485,8 @@
 
         function showSelectedCat(imageUrl) {
             console.log("Selected Image URL:", imageUrl);
-            document.getElementById('selectedCatDisplay').src = imageUrl;
+            $('#selectedCatDisplay').attr('src', imageUrl); // Adjust according to the response
+            //document.getElementById('selectedCatDisplay').src = imageUrl;
         }
 
     </script>
