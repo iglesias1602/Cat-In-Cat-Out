@@ -36,17 +36,18 @@ class DeviceRecords(models.Model):
     image = models.ImageField(upload_to=record_directory_path, null=True, blank=True)
     time = models.DateTimeField(auto_now_add=True)
 
-    def get_image_url(self):
-        if self.image:
-            return self.image.url
-        return None  # Or a placeholder image URL if you prefer
-
     EVENTS_CHOICES = [
         ("IN", "Entrée"),
         ("OUT", "Sortie"),
     ]
     event = models.CharField(max_length=3, choices=EVENTS_CHOICES)
     isCat = models.BooleanField()
+
+    def get_image_url(self):
+        if self.image and hasattr(self.image, 'url'):
+            print("Image URL:", self.image.url)  # Debugging print
+            return self.image.url
+        return None
 
 def cat_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
