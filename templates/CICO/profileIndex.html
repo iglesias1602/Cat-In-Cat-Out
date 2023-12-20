@@ -483,11 +483,11 @@
 
     <script>
 
-        function showSelectedCat(imageUrl) {
-            console.log("Selected Image URL:", imageUrl);
-            document.getElementById('selectedCatDisplay').src = imageUrl;
-            //document.getElementById('selectedCatDisplay').src = imageUrl;
-        }
+        $('#modal-record').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var imageUrl = button.data('image-url');
+            $(this).find('#selectedCatDisplay').attr('src', imageUrl);
+        });
 
     </script>
 
