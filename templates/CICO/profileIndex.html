@@ -75,7 +75,7 @@
                     <td>
                         <button class="btn d-flex my-auto justify-content-xl-start" type="button"
                             data-bs-target="#modal-record" data-bs-toggle="modal" style="width: 100%"
-                            data-image-url="{{ record.get_image_url }}" onclick="showSelectedCat(this)">
+                            onclick="showSelectedCat('{{ record.get_image_url }}')">
                             {{record.catName}}
                         </button>
                     </td>
@@ -484,10 +484,9 @@
     <script>
 
         let selectedCat = ""
-        function showSelectedCat() {
+        function showSelectedCat(imageUrl) {
             console.log(selectedCat)
-            let imageUrl = element.getAttribute('data-image-url');
-            $('#selectedCatDisplay').attr('src', imageUrl);
+            document.getElementById('selectedCatDisplay').src = imageUrl;
         }
 
     </script>
