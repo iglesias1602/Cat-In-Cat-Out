@@ -44,10 +44,8 @@ class DeviceRecords(models.Model):
     isCat = models.BooleanField()
 
     def get_image_url(self):
-        if self.image and hasattr(self.image, 'url'):
-            print("Image URL:", self.image.url)  # Debugging print
-            return self.image.url
-        return None
+        """Return the full URL of the image, or None if there is no image."""
+        return self.image.url if self.image else None
 
 def cat_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>

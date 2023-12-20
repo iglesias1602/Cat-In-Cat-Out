@@ -81,6 +81,17 @@ def GetRecords(deviceId,date):
 def AddRecord(deviceOwner,event,isCat, photo, cat = None):
     newRecord = DeviceRecords.objects.create(deviceId=deviceOwner,event=event,isCat=isCat, image=photo)
 
+def GetRecordImage(request):
+    # Retrieve a specific DeviceRecord instance
+    device_record = DeviceRecords.objects.get(recordId=id)
+    
+    # Get the image URL
+    image_url = device_record.image.url if device_record.image else None
+
+    # Pass the image URL to the template (or use it for other processing)
+    return redirect("profileIndex")
+
+
 
 def Empty(request):
     return redirect("CICO/")
