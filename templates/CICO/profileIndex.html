@@ -316,318 +316,319 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- get records Modal -->
-    <div class="modal" id="modal-record" tabindex="-1" role="dialog" aria-labelledby="modal-record-label"
-        aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modal-record-label">Cat Image</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <img id="selectedCatDisplay" class="img-fluid border rounded mx-auto d-block" alt="Cat"
-                        style="max-width: 100%; height: auto;" src="">
-                </div>
+<!-- get records Modal -->
+<div class="modal" id="modal-record" tabindex="-1" role="dialog" aria-labelledby="modal-record-label"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-record-label">Cat Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <img id="selectedCatDisplay" class="img-fluid border rounded mx-auto d-block" alt="Cat"
+                    style="max-width: 100%; height: auto;" src="">
             </div>
         </div>
     </div>
+</div>
 
 
-    <div id="toastContainer" class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
-        style="z-index: 11;">
-        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert"
-            aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    Le chat a été ajouté avec succès
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+<div id="toastContainer" class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
+    style="z-index: 11;">
+    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+        aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Le chat a été ajouté avec succès
             </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
         </div>
     </div>
+</div>
 
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11">
-        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert"
-            aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    There was an error adding the cat. Please try again.
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11">
+    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert"
+        aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                There was an error adding the cat. Please try again.
             </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
         </div>
     </div>
+</div>
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function updateImagePreview(input, imageId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function updateImagePreview(input, imageId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
 
-                reader.onload = function (e) {
-                    document.getElementById(imageId).src = e.target.result;
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        window.updateImagePreview = updateImagePreview;
-    </script>
-    <script>
-        $('#modal-1').on('hidden.bs.modal', function () {
-            $(this).find('form').trigger('reset');
-            // Reset image preview to default image
-            $('#imgFrontPreview').attr('src', "{% static 'img/silhouette-face.jpg' %}");
-        });
-    </script>
-
-    <script>
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        function submitAddCatForm() {
-            $("#addCatForm").submit(function (e) {
-                e.preventDefault();
-                var formData = new FormData(this);
-                $.ajax({
-                    type: 'POST',
-                    url: '/CICO/add_cat/',
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken'),
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    success: handleAddCatSuccess,
-                    error: handleAddCatError
-                });
-            });
-        }
-
-        function handleAddCatSuccess(response) {
-            console.log(response.catsAndStatus)
-            if (response.success) {
-
-                appendCatRow(response.catsAndStatus);
-                showToast('successToast');
-                closeModal('modal-1');
-            } else {
-                showToast('errorToast');
-                return ('Error submitting form:', JSON.stringify(response.errors));
-            }
-        }
-
-        function handleAddCatError(response) {
-            if (response.responseText) {
-                const errors = response.responseText;
-                if (response.responseText) {
-                    showToast('errorToast');
-                    closeModal('modal-1');
-
-                    return ("A cat with this name already exists for this user", errors)
-
-                }
-            }
-            showToast('errorToast');
-        }
-
-
-        function appendCatRow(cats) {
-            var catRow = '<tr><td><button class="btn d-flex my-auto justify-content-xl-start cat-btn" data-cat-id="' + cats[1] + '" type="button" style="width: 100%;">' + cats[0] + ', état: ' + cats[2] + '<i class="fas fa-cat fs-4" style="margin-left: 10px;"></i></button></td></tr>';
-
-            $('#catList').append(catRow);
-        }
-
-
-        function showToast(toastId) {
-            var toast = new bootstrap.Toast(document.getElementById(toastId));
-            toast.show();
-        }
-
-        function closeModal(modalId) {
-            var modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
-            modal.hide();
-        }
-    </script>
-
-    <script>
-        function showSelectedCat(imageUrl) {
-            console.log(imageUrl);
-            // Assuming you have an img element with the id 'selectedCatDisplay'
-            document.getElementById('selectedCatDisplay').src = imageUrl;
-        }
-    </script>
-
-    <script>
-        function loadCats() {
-            $.ajax({
-                url: '/CICO/get_cats/',
-                type: 'GET',
-                success: function (cats) {
-                    cats.forEach(appendCatRow);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching user cats:', error);
-                }
-            });
-        }
-
-        $(document).ready(function () {
-            loadCats();
-            submitAddCatForm();
-        });
-    </script>
-
-    <script>
-        $(document).on('click', '.cat-btn', function () {
-            let catId = $(this).data('cat-id');
-            fetchAndDisplayCatDetails(catId);
-        });
-
-        function fetchAndDisplayCatDetails(catId) {
-
-            //var formattedCatId = catId.replace(/-/g, '');
-
-            $.ajax({
-                type: 'GET',
-                url: '/CICO/get_cat_details/' + catId,  // URL to your Django view that returns cat details
-                success: function (response) {
-                    console.log(response.image_url)
-                    $('#catNameModal').text(response.name);
-                    $('#catDetailsModal').attr('data-cat-id', catId);
-                    $('#catImageModal').attr('src', response.image_url); // Adjust according to the response
-                    $('#catDetailsModal').modal('show');
-                },
-                error: function (error) {
-                    return ("Error fetching cat details: ", error);
-                }
-            });
-        }
-    </script>
-    <script>
-        $(document).on('click', '.deleteCatBtn', function () {
-            var catId = $('#catDetailsModal').data('cat-id');
-            // var formattedCatId = catId.replace(/-/g, '');
-            if (confirm('Are you sure you want to delete this cat?')) {
-                deleteCat(catId);
-            }
-        });
-
-        function deleteCat(catId) {
-            //var formattedCatId = catId.replace(/-/g, '');
-
-            $.ajax({
-                type: 'DELETE',
-                url: '/CICO/delete_cat/' + catId,
-                headers: {
-                    'X-CSRFToken': getCookie('csrftoken'),  // Make sure to include CSRF token
-                    'X-Requested-With': 'XMLHttpRequest'
-
-                },
-                success: function (response) {
-                    // Handle success (e.g., close modal, remove cat from list, show message)
-                    $('#catDetailsModal').modal('hide');
-                    $('button[data-cat-id="' + catId + '"]').closest('tr').remove(); // Remove cat from list
-                    alert('Cat deleted successfully');
-                },
-                error: function (error) {
-                    // Handle error
-                    return ('Error deleting cat:', error);
-                }
-            });
-        }
-    </script>
-    <script>
-        $(document).on('click', '#modifyCatBtn', function () {
-            var catId = $('#catDetailsModal').data('cat-id');
-            var catName = $(this).data('cat-name');
-            // Set the catId and current name in the modify modal
-            $('#modifyCatModal').find('#editCatName').val(catName);
-            $('#modifyCatModal').find('#submitModifyCat').data('cat-id', catId);
-            $('#catDetailsModal').modal('hide').click();
-
-            // Show the modify cat modal
-            $('#modifyCatModal').modal('show');
-
-        });
-
-        $(document).on('click', '#submitModifyCat', function () {
-            var catId = $(this).data('cat-id');
-            var newName = $('#editCatName').val();
-            var newImage = $('#editCatImage')[0].files[0];
-
-            var formData = new FormData();
-            formData.append('name', newName);
-            if (newImage) {
-                formData.append('image', newImage);
+            reader.onload = function (e) {
+                document.getElementById(imageId).src = e.target.result;
             }
 
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    window.updateImagePreview = updateImagePreview;
+</script>
+<script>
+    $('#modal-1').on('hidden.bs.modal', function () {
+        $(this).find('form').trigger('reset');
+        // Reset image preview to default image
+        $('#imgFrontPreview').attr('src', "{% static 'img/silhouette-face.jpg' %}");
+    });
+</script>
+
+<script>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function submitAddCatForm() {
+        $("#addCatForm").submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
             $.ajax({
                 type: 'POST',
-                url: '/CICO/modify_cat/' + catId + '/',
+                url: '/CICO/add_cat/',
                 data: formData,
                 cache: false,
                 contentType: false,
                 processData: false,
+
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken'),
                     'X-Requested-With': 'XMLHttpRequest'
-
                 },
-                success: function (response) {
-                    if (response.success) {
-                        // Update UI accordingly
-                        var updatedCat = {
-                            catId: response.catId,
-                            name: response.newName
-                        };
-
-                        // Update the cat row
-                        updateCatRow(updatedCat);
-
-                        $('#modifyCatModal').modal('hide');
-                        alert('Cat modified successfully');
-                    } else {
-                        alert('Error modifying cat: ' + JSON.stringify(response.errors));
-                    }
-                },
-                error: function (error) {
-                    console.log(error)
-                    alert('Error modifying cat');
-                }
+                success: handleAddCatSuccess,
+                error: handleAddCatError
             });
         });
+    }
 
-        function updateCatRow(cat) {
-            var catButtonHtml = '<button class="btn d-flex my-auto justify-content-xl-start cat-btn" data-cat-id="' + cat.catId + '" type="button" style="width: 100%;">' + cat.name + '<i class="fas fa-cat fs-4" style="margin-left: 10px;"></i></button>';
-            // Find the existing cat row and update its contents
-            $(".cat-btn[data-cat-id='" + cat.catId + "']").closest('td').html(catButtonHtml);
+    function handleAddCatSuccess(response) {
+        console.log(response.catsAndStatus)
+        if (response.success) {
+
+            appendCatRow(response.catsAndStatus);
+            showToast('successToast');
+            closeModal('modal-1');
+        } else {
+            showToast('errorToast');
+            return ('Error submitting form:', JSON.stringify(response.errors));
         }
-    </script>
+    }
+
+    function handleAddCatError(response) {
+        if (response.responseText) {
+            const errors = response.responseText;
+            if (response.responseText) {
+                showToast('errorToast');
+                closeModal('modal-1');
+
+                return ("A cat with this name already exists for this user", errors)
+
+            }
+        }
+        showToast('errorToast');
+    }
+
+
+    function appendCatRow(cats) {
+        var catRow = '<tr><td><button class="btn d-flex my-auto justify-content-xl-start cat-btn" data-cat-id="' + cats[1] + '" type="button" style="width: 100%;">' + cats[0] + ', état: ' + cats[2] + '<i class="fas fa-cat fs-4" style="margin-left: 10px;"></i></button></td></tr>';
+
+        $('#catList').append(catRow);
+    }
+
+
+    function showToast(toastId) {
+        var toast = new bootstrap.Toast(document.getElementById(toastId));
+        toast.show();
+    }
+
+    function closeModal(modalId) {
+        var modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+        modal.hide();
+    }
+</script>
+
+<script>
+    function showSelectedCat(imageUrl) {
+        console.log(imageUrl);
+        // Assuming you have an img element with the id 'selectedCatDisplay'
+        document.getElementById('selectedCatDisplay').src = imageUrl;
+    }
+</script>
+
+<script>
+    function loadCats() {
+        $.ajax({
+            url: '/CICO/get_cats/',
+            type: 'GET',
+            success: function (cats) {
+                cats.forEach(appendCatRow);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching user cats:', error);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        loadCats();
+        submitAddCatForm();
+    });
+</script>
+
+<script>
+    $(document).on('click', '.cat-btn', function () {
+        let catId = $(this).data('cat-id');
+        fetchAndDisplayCatDetails(catId);
+    });
+
+    function fetchAndDisplayCatDetails(catId) {
+
+        //var formattedCatId = catId.replace(/-/g, '');
+
+        $.ajax({
+            type: 'GET',
+            url: '/CICO/get_cat_details/' + catId,  // URL to your Django view that returns cat details
+            success: function (response) {
+                console.log(response.image_url)
+                $('#catNameModal').text(response.name);
+                $('#catDetailsModal').attr('data-cat-id', catId);
+                $('#catImageModal').attr('src', response.image_url); // Adjust according to the response
+                $('#catDetailsModal').modal('show');
+            },
+            error: function (error) {
+                return ("Error fetching cat details: ", error);
+            }
+        });
+    }
+</script>
+<script>
+    $(document).on('click', '.deleteCatBtn', function () {
+        var catId = $('#catDetailsModal').data('cat-id');
+        // var formattedCatId = catId.replace(/-/g, '');
+        if (confirm('Are you sure you want to delete this cat?')) {
+            deleteCat(catId);
+        }
+    });
+
+    function deleteCat(catId) {
+        //var formattedCatId = catId.replace(/-/g, '');
+
+        $.ajax({
+            type: 'DELETE',
+            url: '/CICO/delete_cat/' + catId,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),  // Make sure to include CSRF token
+                'X-Requested-With': 'XMLHttpRequest'
+
+            },
+            success: function (response) {
+                // Handle success (e.g., close modal, remove cat from list, show message)
+                $('#catDetailsModal').modal('hide');
+                $('button[data-cat-id="' + catId + '"]').closest('tr').remove(); // Remove cat from list
+                alert('Cat deleted successfully');
+            },
+            error: function (error) {
+                // Handle error
+                return ('Error deleting cat:', error);
+            }
+        });
+    }
+</script>
+<script>
+    $(document).on('click', '#modifyCatBtn', function () {
+        var catId = $('#catDetailsModal').data('cat-id');
+        var catName = $(this).data('cat-name');
+        // Set the catId and current name in the modify modal
+        $('#modifyCatModal').find('#editCatName').val(catName);
+        $('#modifyCatModal').find('#submitModifyCat').data('cat-id', catId);
+        $('#catDetailsModal').modal('hide').click();
+
+        // Show the modify cat modal
+        $('#modifyCatModal').modal('show');
+
+    });
+
+    $(document).on('click', '#submitModifyCat', function () {
+        var catId = $(this).data('cat-id');
+        var newName = $('#editCatName').val();
+        var newImage = $('#editCatImage')[0].files[0];
+
+        var formData = new FormData();
+        formData.append('name', newName);
+        if (newImage) {
+            formData.append('image', newImage);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/CICO/modify_cat/' + catId + '/',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+
+            },
+            success: function (response) {
+                if (response.success) {
+                    // Update UI accordingly
+                    var updatedCat = {
+                        catId: response.catId,
+                        name: response.newName
+                    };
+
+                    // Update the cat row
+                    updateCatRow(updatedCat);
+
+                    $('#modifyCatModal').modal('hide');
+                    alert('Cat modified successfully');
+                } else {
+                    alert('Error modifying cat: ' + JSON.stringify(response.errors));
+                }
+            },
+            error: function (error) {
+                console.log(error)
+                alert('Error modifying cat');
+            }
+        });
+    });
+
+    function updateCatRow(cat) {
+        var catButtonHtml = '<button class="btn d-flex my-auto justify-content-xl-start cat-btn" data-cat-id="' + cat.catId + '" type="button" style="width: 100%;">' + cat.name + '<i class="fas fa-cat fs-4" style="margin-left: 10px;"></i></button>';
+        // Find the existing cat row and update its contents
+        $(".cat-btn[data-cat-id='" + cat.catId + "']").closest('td').html(catButtonHtml);
+    }
+</script>
 
 
 
-    {% endblock %}
+{% endblock %}
