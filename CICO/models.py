@@ -36,6 +36,11 @@ class DeviceRecords(models.Model):
     image = models.ImageField(upload_to=record_directory_path, null=True, blank=True)
     time = models.DateTimeField(auto_now_add=True)
 
+    def get_image_url(self):
+        if self.image:
+            return self.image.url
+        return None  # Or a placeholder image URL if you prefer
+
     EVENTS_CHOICES = [
         ("IN", "Entrée"),
         ("OUT", "Sortie"),
