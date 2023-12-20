@@ -70,17 +70,22 @@
 
 
                 {% for record in recordList %}
-                <tr>
-                    <td>{{ record.catName }}</td>
-                    <td>{{ record.event }}</td>
-                    <!-- Other fields -->
-                    <td>
-                        <!-- Use the imageUrl for displaying or linking to the image -->
-                        <img src="{{ record.imageUrl }}" alt="Record Image">
-                    </td>
-                </tr>
-                {% endfor %}
 
+                <tr id=row_{{forloop.counter}}>
+                    <td>
+                        <button class="btn d-flex my-auto justify-content-xl-start" type="button"
+                            data-bs-target="#modal-record" data-bs-toggle="modal" style="width: 100%"
+                            onclick="showSelectedCat('{{ record.imageUrl }}')">
+                            {{record.catName}}
+                        </button>
+                    </td>
+                    <td>{{record.event}}</td>
+                    <td>{{record.time}}</td>
+                </tr>
+
+
+
+                {% endfor %}
             </tbody>
         </table>
 
@@ -326,7 +331,8 @@
                                 <div class="col-auto col-sm-auto col-md-auto col-lg-auto col-xl-auto col-xxl-auto align-self-center m-auto"
                                     style="margin: 15px;">
                                     <img id="selectedCatDisplay" class="border rounded d-flex m-auto" width="100%"
-                                        height="200" src="{% static 'img/silhouette-face.jpg' %}">
+                                        height="200" src="{% static 'img/silhouette-face.jpg' %}"
+                                        alt="Selected Cat Image">
                                     <p id="selectedCatDisplay"></p>
                                 </div>
                             </div>
@@ -477,9 +483,8 @@
 
     <script>
 
-        let selectedCat = ""
         function showSelectedCat(imageUrl) {
-            console.log(selectedCat)
+            console.log("Selected Image URL:", imageUrl);
             document.getElementById('selectedCatDisplay').src = imageUrl;
         }
 
