@@ -13,6 +13,7 @@ urlpatterns = [
     path("faq",views.faq, name = "faq"),
     path("contact",views.contact, name = "contact"),
     path("profileIndex", views.profileIndex, name ="profileIndex"),
+    path("profile", views.profile, name ="profile"),
     path("commande", views.commande, name ="commande"),
     path("postRaspberry", views.postRaspberry, name="postRaspberry"),
 
